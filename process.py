@@ -77,49 +77,77 @@ def sarima_helper(df, order, seasonal_order, steps):
     forecast = model_fit.forecast(steps=steps)
     return forecast
 
-def sarima(df, order = (1,0,0), seasonal_order = (0,0,0,1), steps = 1):
+
+def sarima(df, idx, order = (1,0,0), seasonal_order = (0,0,0,1), steps = 1):
     forecasts = {}
     for col in df.columns:
         series = df[col]
         forecast = sarima_helper(series, order, seasonal_order, steps)
         forecasts[col] = forecast
-    return forecasts
+    sorted_data = sorted(forecasts.items(), key = lambda x:-x[1].values[0])
+    ranking = None
+    for i, (key, _) in enumerate(sorted_data, 1):
+        if key == winners[idx]:
+            ranking = i
+    return ranking - 1
+
+p = [0,1,2]
+d = [0,1]
+q = [0,1,1]
+P = [0,1,2]
+D = [0,1]
+Q = [0,1,2]
+s = [2,4,12]
+
+# def sarima_param():
+#     best_us_para = []
+#     best_us_score = 100
+#     best_world_para = []
+#     best_world_score = 100
+#     for a in p:
+#         for b in d:
+#             for c in q:
+#                 for e in P:
+#                     for f in D:
+#                         for g in Q:
+#                             for h in s:
+#                                 para = [a,b,c,e,f,g,h]
+#                                 for i in range(len())
+
 
 for i in range(len(us_dataset)):
-    print(str(2015+i)+"---Maximum------------------------------------------")
-    print(str(2015+i)+"---US------------------------------------------")
-    max_us = maximum(us_dataset[i], i)
-    print(max_us)
-    print(str(2015+i)+"---WORLD------------------------------------------")
-    max_world = maximum(world_dataset[i], i)
-    print(max_world)
+    # print(str(2015+i)+"---Maximum------------------------------------------")
+    # print(str(2015+i)+"---US------------------------------------------")
+    # max_us = maximum(us_dataset[i], i)
+    # print(max_us)
+    # print(str(2015+i)+"---WORLD------------------------------------------")
+    # max_world = maximum(world_dataset[i], i)
+    # print(max_world)
 
-    print(str(2015+i)+"---Mean------------------------------------------")
-    print(str(2015+i)+"---US------------------------------------------")
-    mean_us = mean(us_dataset[i], i)
-    print(mean_us)
-    print(str(2015+i)+"---WORLD------------------------------------------")
-    mean_world = mean(world_dataset[i], i)
-    print(mean_world)
+    # print(str(2015+i)+"---Mean------------------------------------------")
+    # print(str(2015+i)+"---US------------------------------------------")
+    # mean_us = mean(us_dataset[i], i)
+    # print(mean_us)
+    # print(str(2015+i)+"---WORLD------------------------------------------")
+    # mean_world = mean(world_dataset[i], i)
+    # print(mean_world)
 
-    print(str(2015+i)+"---Exp Smoothing------------------------------------------")
-    alpha = 0.5
-    print(str(2015+i)+"---US------------------------------------------")
-    exp_us = exponential_smoothing(us_dataset[i], alpha, i)
-    print(exp_us)
-    print(str(2015+i)+"---WORLD------------------------------------------")
-    exp_wolrd = exponential_smoothing(world_dataset[i], alpha, i)
-    print(exp_wolrd)
+    # print(str(2015+i)+"---Exp Smoothing------------------------------------------")
+    # alpha = 0.5
+    # print(str(2015+i)+"---US------------------------------------------")
+    # exp_us = exponential_smoothing(us_dataset[i], alpha, i)
+    # print(exp_us)
+    # print(str(2015+i)+"---WORLD------------------------------------------")
+    # exp_wolrd = exponential_smoothing(world_dataset[i], alpha, i)
+    # print(exp_wolrd)
 
     print(str(2015+i)+"---SARIMA------------------------------------------")
     order = (1,1,1)
     seasonal_order = (1,1,1,5)
     steps = 1
     print(str(2015+i)+"---US------------------------------------------")
-    sarima_us = sarima(us_dataset[i], order, seasonal_order, steps)
-    for col, forecast in sarima_us.items():
-        print(f"Movie {col}: {forecast}")
+    sarima_us = sarima(us_dataset[i], i, order, seasonal_order, steps)
+    print(sarima_us)
     print(str(2015+i)+"---WORLD------------------------------------------")
-    sarima_world = sarima(world_dataset[i], order, seasonal_order, steps)
-    for col, forecast in sarima_world.items():
-        print(f"Movie {col}: {forecast}")
+    sarima_world = sarima(world_dataset[i], i, order, seasonal_order, steps)
+    print(sarima_world)
