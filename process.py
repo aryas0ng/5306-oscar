@@ -51,12 +51,20 @@ winner_idx = [0, 4, 1, 0, 4, 3, 1, 1, 1, 8]
 #     print(str(2015+i)+"---WINNER------------------------------------------")
 #     print(winners[i])
 
-def maximum(df):
-    max_values = [df.iloc[:, col].max() for col in range(df.shape[1])]
-    max_column_index = max_values.index(max(max_values))
-    return max_column_index
+# Return the ranking of winner based on the maximum value, 0-based ranking
+def maximum(df, idx):
+    max_value = df.max()
+    sorted = max_value.sort_values().rank(ascending=False)
+    return sorted[winners[idx]]-1
 
-# Return the index of the maximum value based on exponential smoothing and prediction
+def mean(df, idx):
+    mean = df.mean()
+    print(mean)
+    sorted = mean.sort_values().rank(ascending=False)
+    print(sorted)
+    return sorted[winners[idx]]-1
+
+# Return the ranking of the winner based on exponential smoothing and prediction, 0-based ranking
 def exponential_smoothing(df, alpha, idx):
     smoothed = df.ewm(alpha=alpha).mean()
     pred = smoothed.iloc[-1] + alpha * (df.iloc[-1] - smoothed.iloc[-1])
@@ -80,20 +88,18 @@ def sarima(df, order = (1,0,0), seasonal_order = (0,0,0,1), steps = 1):
 for i in range(len(us_dataset)):
     print(str(2015+i)+"---Maximum------------------------------------------")
     print(str(2015+i)+"---US------------------------------------------")
-    max_us = maximum(us_dataset[i])
-    max_us_title = us_dataset[i].columns[max_us]
-    print(max_us_title)
+    max_us = maximum(us_dataset[i], i)
+    print(max_us)
     print(str(2015+i)+"---WORLD------------------------------------------")
-    max_world = maximum(world_dataset[i])
-    max_world_title = world_dataset[i].columns[max_world]
-    print(max_world_title)
+    max_world = maximum(world_dataset[i], i)
+    print(max_world)
 
     print(str(2015+i)+"---Mean------------------------------------------")
     print(str(2015+i)+"---US------------------------------------------")
-    mean_us = us_dataset[i].mean()
+    mean_us = mean(us_dataset[i], i)
     print(mean_us)
     print(str(2015+i)+"---WORLD------------------------------------------")
-    mean_world = world_dataset[i].mean()
+    mean_world = mean(world_dataset[i], i)
     print(mean_world)
 
     print(str(2015+i)+"---Exp Smoothing------------------------------------------")
