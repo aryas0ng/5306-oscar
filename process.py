@@ -40,12 +40,14 @@ for year in range(10):
 winners = ["BIRDMAN","SPOTLIGHT","MOONLIGHT","THE SHAPE OF WATER","GREEN BOOK","PARASITE","NOMADLAND","CODA",
            "EVERYTHING EVERYWHERE ALL AT ONCE","OPPENHEIMER"]
 
+winner_idx = [0, 4, 1, 0, 4, 3, 1, 1, 1, 8]
+
 # 参考框架（复制用不要直接用）：
 # for i in range(len(us_dataset)):
 #     print(str(2015+i)+"---US------------------------------------------")
 #     print(us_dataset[i])
 #     print(str(2015+i)+"---WORLD------------------------------------------")
-#     print(world_dataset[i])
+    # print(world_dataset[i])
 #     print(str(2015+i)+"---WINNER------------------------------------------")
 #     print(winners[i])
 
@@ -55,10 +57,11 @@ def maximum(df):
     return max_column_index
 
 # Return the index of the maximum value based on exponential smoothing and prediction
-def exponential_smoothing(df, alpha):
+def exponential_smoothing(df, alpha, idx):
     smoothed = df.ewm(alpha=alpha).mean()
     pred = smoothed.iloc[-1] + alpha * (df.iloc[-1] - smoothed.iloc[-1])
-    return pred.argmax()
+    sorted = pred.sort_values().rank(ascending=False)
+    return sorted[winners[idx]]-1
 
 def sarima_helper(df, order, seasonal_order, steps):
     model = SARIMAX(df, order=order, seasonal_order=seasonal_order, enforce_stationarity=False, enforce_invertibility=False)
@@ -66,7 +69,7 @@ def sarima_helper(df, order, seasonal_order, steps):
     forecast = model_fit.forecast(steps=steps)
     return forecast
 
-def sarima(df, order = (1,1,1), seasonal_order = (1,1,1,5), steps = 1):
+def sarima(df, order = (1,0,0), seasonal_order = (0,0,0,1), steps = 1):
     forecasts = {}
     for col in df.columns:
         series = df[col]
@@ -96,10 +99,10 @@ for i in range(len(us_dataset)):
     print(str(2015+i)+"---Exp Smoothing------------------------------------------")
     alpha = 0.5
     print(str(2015+i)+"---US------------------------------------------")
-    exp_us = exponential_smoothing(us_dataset[i], alpha)
+    exp_us = exponential_smoothing(us_dataset[i], alpha, i)
     print(exp_us)
     print(str(2015+i)+"---WORLD------------------------------------------")
-    exp_wolrd = exponential_smoothing(world_dataset[i], alpha)
+    exp_wolrd = exponential_smoothing(world_dataset[i], alpha, i)
     print(exp_wolrd)
 
     print(str(2015+i)+"---SARIMA------------------------------------------")
